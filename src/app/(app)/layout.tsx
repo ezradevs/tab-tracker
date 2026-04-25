@@ -28,10 +28,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <AnimatePresence mode="wait">
         <motion.main
           key={pathname}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          initial={{ opacity: 0, y: 10, filter: "blur(10px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: -8, filter: "blur(6px)" }}
+          transition={{
+            opacity: { duration: 0.24, ease: [0.22, 1, 0.36, 1] },
+            y: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+            filter: { duration: 0.24, ease: "easeOut" },
+          }}
           className="flex-1 pb-24"
         >
           {children}

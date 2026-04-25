@@ -2,18 +2,21 @@
 
 import { motion } from "framer-motion"
 import { Banknote, Clock } from "lucide-react"
-import { format } from "date-fns"
 import { useCurrentUser } from "@/hooks/useCurrentUser"
 import { useTransactions } from "@/hooks/useTransactions"
 import { useSettlements } from "@/hooks/useSettlements"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { PageLoader } from "@/components/shared/LoadingSpinner"
-import { formatCurrency } from "@/lib/utils"
+import { SettlementItem } from "@/components/transactions/SettlementItem"
 
 export default function HistoryPage() {
   const { user, loading: userLoading } = useCurrentUser()
-  const { transactions, loading: txLoading } = useTransactions(user?.groupId ?? null, user?.id ?? null)
-  const { settlements, loading: settlLoading } = useSettlements(user?.groupId ?? null)
+  const {
+    transactions,
+    loading: txLoading,
+    reopenSettlementTransactions,
+  } = useTransactions(user?.groupId ?? null, user?.id ?? null)
+  const { settlements, loading: settlLoading, deleteSettlement } = useSettlements(user?.groupId ?? null)
 
   if (userLoading || txLoading || settlLoading) return <PageLoader />
   if (!user) return null
@@ -32,7 +35,13 @@ export default function HistoryPage() {
   const totalSettled = settlements.reduce((s, s2) => s + s2.amount, 0)
 
   const mumName = mumProfile?.display_name ?? "Mum"
-  const ownerName = ownerProfile?.display_name ?? "You"
+
+  const handleDeleteSettlement = async (settlementId: string) => {
+    const result = await deleteSettlement(settlementId)
+    if ("error" in result && result.error) return
+
+    await reopenSettlementTransactions(settlementId)
+  }
 
   return (
     <div className="flex flex-col gap-5 p-4 pt-6">
@@ -67,28 +76,14 @@ export default function HistoryPage() {
         ) : (
           <div className="rounded-xl bg-surface border border-border overflow-hidden divide-y divide-border">
             {settlements.map((s, i) => {
-              const payerName = s.payer_id === ownerProfile?.id ? ownerName : mumName
               return (
                 <motion.div
                   key={s.id}
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className="flex items-center gap-3 px-4 py-3.5"
                 >
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15">
-                    <Banknote className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">
-                      {payerName} paid {formatCurrency(s.amount)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {format(new Date(s.settled_at), "d MMM yyyy")}
-                      {s.notes && ` · ${s.notes}`}
-                    </p>
-                  </div>
-                  <Banknote className="h-4 w-4 text-positive" />
+                  <SettlementItem settlement={s} user={user} onDelete={handleDeleteSettlement} />
                 </motion.div>
               )
             })}

@@ -147,5 +147,44 @@ export function useTransactions(groupId: string | null, userId: string | null) {
     [fetchTransactions, groupId]
   )
 
-  return { transactions, loading, addTransaction, deleteTransaction, markSettled, refetch: fetchTransactions }
+  const reopenSettlementTransactions = useCallback(
+    async (settlementId: string) => {
+      if (!groupId) return { error: "No group selected" }
+
+      const previous = transactions
+      const nextTransactions = previous.map((t) =>
+        t.settlement_id === settlementId
+          ? { ...t, is_settled: false, settlement_id: null }
+          : t
+      )
+
+      setTransactions(nextTransactions)
+      transactionCache.set(groupId, nextTransactions)
+
+      const supabase = createClient()
+      const { error } = await supabase
+        .from("transactions")
+        .update({ is_settled: false, settlement_id: null })
+        .eq("settlement_id", settlementId)
+
+      if (error) {
+        transactionCache.set(groupId, previous)
+        setTransactions(previous)
+        return { error: error.message }
+      }
+
+      return {}
+    },
+    [groupId, transactions]
+  )
+
+  return {
+    transactions,
+    loading,
+    addTransaction,
+    deleteTransaction,
+    markSettled,
+    reopenSettlementTransactions,
+    refetch: fetchTransactions,
+  }
 }

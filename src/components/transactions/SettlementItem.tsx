@@ -10,7 +10,7 @@ import type { Settlement, AppUser } from "@/types/database"
 interface SettlementItemProps {
   settlement: Settlement
   user: AppUser
-  onDelete?: (id: string) => void
+  onDelete?: (id: string) => Promise<void> | void
 }
 
 export function SettlementItem({ settlement, user, onDelete }: SettlementItemProps) {
