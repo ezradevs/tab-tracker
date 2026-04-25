@@ -15,28 +15,15 @@ import Link from "next/link"
 
 export default function TransactionsPage() {
   const { user, loading: userLoading } = useCurrentUser()
-  const {
-    transactions,
-    loading: txLoading,
-    deleteTransaction,
-    markSettled,
-    reopenSettlementTransactions,
-  } = useTransactions(
+  const { transactions, loading: txLoading, deleteTransaction, markSettled } = useTransactions(
     user?.groupId ?? null,
     user?.id ?? null
   )
-  const { settlements, loading: settlLoading, deleteSettlement } = useSettlements(user?.groupId ?? null)
+  const { settlements, loading: settlLoading } = useSettlements(user?.groupId ?? null)
   const [filter, setFilter] = useState<FilterValue>("unsettled")
 
   if (userLoading || txLoading || settlLoading) return <PageLoader />
   if (!user) return null
-
-  const handleDeleteSettlement = async (settlementId: string) => {
-    const result = await deleteSettlement(settlementId)
-    if ("error" in result && result.error) return
-
-    await reopenSettlementTransactions(settlementId)
-  }
 
   const filtered = filter === "unsettled"
     ? transactions.filter((t) => !t.is_settled)
@@ -102,7 +89,7 @@ export default function TransactionsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: i * 0.04 }}
             >
-              <SettlementItem settlement={s} user={user} onDelete={handleDeleteSettlement} />
+              <SettlementItem settlement={s} user={user} />
             </motion.div>
           ))}
         </div>

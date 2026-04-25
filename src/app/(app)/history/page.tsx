@@ -11,12 +11,8 @@ import { SettlementItem } from "@/components/transactions/SettlementItem"
 
 export default function HistoryPage() {
   const { user, loading: userLoading } = useCurrentUser()
-  const {
-    transactions,
-    loading: txLoading,
-    reopenSettlementTransactions,
-  } = useTransactions(user?.groupId ?? null, user?.id ?? null)
-  const { settlements, loading: settlLoading, deleteSettlement } = useSettlements(user?.groupId ?? null)
+  const { transactions, loading: txLoading } = useTransactions(user?.groupId ?? null, user?.id ?? null)
+  const { settlements, loading: settlLoading } = useSettlements(user?.groupId ?? null)
 
   if (userLoading || txLoading || settlLoading) return <PageLoader />
   if (!user) return null
@@ -35,13 +31,6 @@ export default function HistoryPage() {
   const totalSettled = settlements.reduce((s, s2) => s + s2.amount, 0)
 
   const mumName = mumProfile?.display_name ?? "Mum"
-
-  const handleDeleteSettlement = async (settlementId: string) => {
-    const result = await deleteSettlement(settlementId)
-    if ("error" in result && result.error) return
-
-    await reopenSettlementTransactions(settlementId)
-  }
 
   return (
     <div className="flex flex-col gap-5 p-4 pt-6">
@@ -83,7 +72,7 @@ export default function HistoryPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                 >
-                  <SettlementItem settlement={s} user={user} onDelete={handleDeleteSettlement} />
+                  <SettlementItem settlement={s} user={user} />
                 </motion.div>
               )
             })}
