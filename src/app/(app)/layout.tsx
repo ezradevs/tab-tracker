@@ -59,8 +59,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="relative flex-1 pb-24 overflow-hidden">
         <motion.main
           key={pathname}
-          initial={{ opacity: 0.92, y: 14, scale: 0.992, filter: "blur(8px)" }}
-          animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+          initial={{ opacity: 0.94, y: 12, scale: 0.995 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
           className="h-full"
         >
@@ -80,16 +80,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   ease: [0.22, 1, 0.36, 1],
                 },
               }}
-              className="pointer-events-none absolute inset-0 z-20 bg-background/18 backdrop-blur-[10px]"
-            >
-              <motion.div
-                initial={{ opacity: 0.35, scale: 0.96 }}
-                animate={{ opacity: 0.55, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.02 }}
-                transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,rgba(124,58,237,0.18),transparent_58%)]"
-              />
-            </motion.div>
+              className="pointer-events-none absolute inset-0 z-20 bg-background/10"
+            />
           )}
         </AnimatePresence>
       </div>
