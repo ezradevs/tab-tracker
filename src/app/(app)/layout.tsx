@@ -27,9 +27,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <AppShell>
       <motion.main
         key={pathname}
-        initial={{ opacity: 0.97, y: 6 }}
+        initial={{ opacity: 0.94, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
         className="flex-1 pb-24"
       >
         {children}
