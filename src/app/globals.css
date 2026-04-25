@@ -85,6 +85,57 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+::view-transition-group(.page-blur-enter),
+::view-transition-group(.page-blur-exit) {
+  animation-duration: 360ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(.page-blur-exit) {
+  animation: 180ms cubic-bezier(0.4, 0, 1, 1) both page-blur-old;
+}
+
+::view-transition-new(.page-blur-enter) {
+  animation:
+    320ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both page-blur-new,
+    360ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both page-fade-in;
+}
+
+@keyframes page-blur-old {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(0.985);
+  }
+}
+
+@keyframes page-blur-new {
+  from {
+    opacity: 0;
+    filter: blur(12px);
+    transform: translateY(10px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* iOS safe area bottom padding for bottom nav */
 .safe-bottom {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.4rem);

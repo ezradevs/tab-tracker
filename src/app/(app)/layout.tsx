@@ -2,7 +2,7 @@
 
 import { useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
-import { motion } from "framer-motion"
+import { ViewTransition } from "react"
 import { BottomNav } from "@/components/layout/BottomNav"
 import { AppShell } from "@/components/layout/AppShell"
 import { InstallPrompt } from "@/components/shared/InstallPrompt"
@@ -25,15 +25,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <AppShell>
-      <motion.main
-        key={pathname}
-        initial={{ opacity: 0.94, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-        className="flex-1 pb-24"
-      >
-        {children}
-      </motion.main>
+      <ViewTransition enter="page-blur-enter" exit="page-blur-exit" default="none">
+        <main key={pathname} className="flex-1 pb-24">
+          {children}
+        </main>
+      </ViewTransition>
       <BottomNav />
       <InstallPrompt />
     </AppShell>
