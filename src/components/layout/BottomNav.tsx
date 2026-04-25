@@ -1,7 +1,8 @@
 "use client"
 
+import { useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Home, List, Plus, Clock, Settings } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -15,6 +16,11 @@ const tabs = [
 
 export function BottomNav() {
   const pathname = usePathname()
+  const router = useRouter()
+
+  useEffect(() => {
+    tabs.forEach((tab) => router.prefetch(tab.href))
+  }, [router])
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center">
@@ -29,6 +35,11 @@ export function BottomNav() {
                 <Link
                   key={tab.href}
                   href={tab.href}
+                  onClick={() => {
+                    if (pathname !== tab.href) {
+                      window.dispatchEvent(new CustomEvent("tab:navigation-start"))
+                    }
+                  }}
                   className="relative -mt-5 flex h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg shadow-primary/30 transition-transform active:scale-95"
                   aria-label="Add transaction"
                 >
@@ -41,6 +52,11 @@ export function BottomNav() {
               <Link
                 key={tab.href}
                 href={tab.href}
+                onClick={() => {
+                  if (!(tab.href === "/" ? pathname === "/" : pathname.startsWith(tab.href))) {
+                    window.dispatchEvent(new CustomEvent("tab:navigation-start"))
+                  }
+                }}
                 className="flex flex-col items-center gap-1 px-2 py-1 min-w-[48px]"
               >
                 <tab.icon
